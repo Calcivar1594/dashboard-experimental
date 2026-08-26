@@ -20,8 +20,8 @@ st.title("🔬 Dashboard Área Experimental - GCF")
 st.markdown("---")
 
 # Rutas de los archivos
-RUTA_PRODUCCION = "C:\\Users\\caalcivar\\OneDrive - DISTRISODA S.A\\Escritorio\\Area Experimental\\Base de Datos de Producción.xlsx"
-RUTA_LABORATORIO = "C:\\Users\\caalcivar\\OneDrive - DISTRISODA S.A\\Escritorio\\Area Experimental\\Resultados EXPERIMENTAL.xlsx"
+RUTA_PRODUCCION = "Base de Datos de Producción.xlsx"
+RUTA_LABORATORIO = "Resultados EXPERIMENTAL.xlsx"
 
 # Lista de piscinas
 PISCINAS = ['LI001', 'LI002', 'LI003', 'LI004', 'LI005', 'LI006']
@@ -97,7 +97,7 @@ with st.sidebar:
     try:
         col_img1, col_img2, col_img3 = st.columns([1, 100, 1])
         with col_img2:
-            st.image("C:\\Users\\caalcivar\\OneDrive - DISTRISODA S.A\\Escritorio\\Area Experimental\\Imagenes\\GCF.png", width=300)
+                        st.image("GCF.png", width=300)
     except:
         st.warning("No se pudo cargar el logo")
     
