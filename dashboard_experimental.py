@@ -15,11 +15,50 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Usuarios autorizados
+USUARIOS = {
+    "Cmolina": "Gerentenutricion2026",
+    "Calcívar": "Cesaralcivar2123",
+    "Jminuche": "Especialistacalidad2026"
+}
+
+# Función de login
+def login():
+    st.title("🔬 Dashboard Área Experimental")
+    st.markdown("---")
+    
+    col1, col2, col3 = st.columns([1, 2, 1])
+    
+    with col2:
+        st.subheader("Iniciar Sesión")
+        usuario = st.text_input("Usuario")
+        contraseña = st.text_input("Contraseña", type="password")
+        
+        if st.button("Ingresar", type="primary", use_container_width=True):
+            if usuario in USUARIOS and USUARIOS[usuario] == contraseña:
+                st.session_state['autenticado'] = True
+                st.session_state['usuario'] = usuario
+                st.rerun()
+            else:
+                st.error("Usuario o contraseña incorrectos")
+        
+        st.markdown("---")
+        st.info("Acceso restringido. Solo personal autorizado.")
+
+# Verificar autenticación
+if 'autenticado' not in st.session_state:
+    st.session_state['autenticado'] = False
+
+if not st.session_state['autenticado']:
+    login()
+    st.stop()
+
+# Si está autenticado, mostrar el dashboard
 # Título principal
-st.title("🔬 Dashboard Área Experimental - GCF")
+st.title("🔬 Dashboard Área Experimental - Grupo Corporativo Fajardo")
 st.markdown("---")
 
-# Rutas de los archivos
+# Rutas de los archivos (para GitHub)
 RUTA_PRODUCCION = "Base de Datos de Producción.xlsx"
 RUTA_LABORATORIO = "Resultados EXPERIMENTAL.xlsx"
 
@@ -69,18 +108,15 @@ def cargar_datos_laboratorio():
 # Función para encontrar columna de fecha
 def encontrar_columna_fecha(df):
     """Busca la columna de fecha en un dataframe, priorizando F.muestreo"""
-    # Primero buscar F.muestreo
     for col in df.columns:
         if col == 'F.muestreo':
             return col
     
-    # Luego buscar otras columnas de fecha
     for col in df.columns:
         col_lower = col.lower()
         if 'muestreo' in col_lower:
             return col
     
-    # Finalmente buscar cualquier columna de fecha
     for col in df.columns:
         col_lower = col.lower()
         if 'fecha' in col_lower or 'date' in col_lower:
@@ -95,11 +131,22 @@ dfs_laboratorio = cargar_datos_laboratorio()
 with st.sidebar:
     # Imagen centrada arriba de los filtros
     try:
-        col_img1, col_img2, col_img3 = st.columns([1, 100, 1])
+        col_img1, col_img2, col_img3 = st.columns([1, 4, 1])
         with col_img2:
-                        st.image("GCF.png", width=300)
+            st.image("GCF.png", width=300)
     except:
         st.warning("No se pudo cargar el logo")
+    
+    st.markdown("---")
+    
+    # Mostrar usuario logueado
+    st.markdown(f"👤 **Usuario:** {st.session_state['usuario']}")
+    
+    # Botón para cerrar sesión
+    if st.button("Cerrar Sesión", use_container_width=True):
+        st.session_state['autenticado'] = False
+        st.session_state['usuario'] = None
+        st.rerun()
     
     st.markdown("---")
     
@@ -637,8 +684,7 @@ with tab_fito:
 with tab_vs:
     st.header("⚖️ Comparador VS")
     st.markdown("---")
-        
-    # Crear diccionario con todos los dataframes disponibles
+    
     dfs_disponibles = {}
     
     if df_produccion is not None and not df_produccion.empty:
@@ -692,7 +738,6 @@ with tab_vs:
             if columna_1 and columna_2:
                 fig = go.Figure()
                 
-                # Procesar Filtro 1
                 df_1 = dfs_disponibles[fuente_1].copy()
                 if 'Piscina' in df_1.columns:
                     df_1 = df_1[df_1['Piscina'].isin(piscinas_seleccionadas)]
@@ -729,7 +774,6 @@ with tab_vs:
                                 hovertemplate=f'<b>{piscina}</b><br>Fecha: %{{x}}<br>{columna_1}: %{{y:,.2f}}<extra></extra>'
                             ))
                 
-                # Procesar Filtro 2
                 df_2 = dfs_disponibles[fuente_2].copy()
                 if 'Piscina' in df_2.columns:
                     df_2 = df_2[df_2['Piscina'].isin(piscinas_seleccionadas)]
